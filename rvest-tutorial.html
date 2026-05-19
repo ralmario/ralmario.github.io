@@ -1,0 +1,1206 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FakeRiceStat Portal</title>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;1,100;1,200;1,300;1,400;1,500;1,600;1,700&family=IBM+Plex+Sans:ital,wght@0,100..700;1,100..700&display=swap"
+        rel="stylesheet">
+
+    <style>
+        :root {
+            --bg: #eef2f5;
+            --card: #ffffff;
+            --line: #d8e0e8;
+            --primary: #0f3557;
+            --primary-light: #17496f;
+            --secondary: #5f7b95;
+            --accent: #3d8b5c;
+            --text: #1f2933;
+            --muted: #6b7c8f;
+            --shadow: 0 4px 18px rgba(0, 0, 0, 0.08);
+            --radius: 12px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: "IBM Plex Sans", monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        a {
+            color: var(--primary-light);
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        .top-header {
+            background: linear-gradient(135deg, #0d2d4b, #17496f);
+            color: #fff;
+            padding: 20px 32px;
+            border-bottom: 4px solid #3d8b5c;
+        }
+
+        .top-header-inner {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .portal-title {
+            font-size: 30px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+        }
+
+        .portal-subtitle {
+            margin-top: 4px;
+            color: #cbd8e5;
+            font-size: 14px;
+        }
+
+        .release-badge {
+            background: rgba(255, 255, 255, 0.15);
+            padding: 10px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 260px 1fr;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            background: #143a5c;
+            color: #fff;
+            padding: 24px 18px;
+        }
+
+        .sidebar h3 {
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 14px;
+            color: #9fb7cc;
+        }
+
+        .sidebar a {
+            display: block;
+            color: #dce7f2;
+            padding: 12px 14px;
+            border-radius: 10px;
+            margin-bottom: 6px;
+            font-size: 14px;
+            transition: 0.2s;
+        }
+
+        .sidebar a:hover {
+            background: rgba(255, 255, 255, 0.08);
+            text-decoration: none;
+        }
+
+        .content {
+            padding: 28px;
+        }
+
+        .breadcrumb {
+            display: flex;
+            gap: 10px;
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 22px;
+        }
+
+        .breadcrumb span::after {
+            content: "/";
+            margin-left: 10px;
+            color: #9ca9b7;
+        }
+
+        .breadcrumb span:last-child::after {
+            content: "";
+        }
+
+        .card-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 18px;
+            margin-bottom: 26px;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 22px;
+            border: 1px solid var(--line);
+        }
+
+        .card-label {
+            font-size: 13px;
+            color: var(--muted);
+            margin-bottom: 8px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .card-value {
+            font-size: 32px;
+            font-weight: 800;
+            color: var(--primary);
+        }
+
+        .card-note {
+            margin-top: 8px;
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .filter-panel {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            padding: 20px;
+            border: 1px solid var(--line);
+            margin-bottom: 26px;
+        }
+
+        .filter-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 16px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-size: 13px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: var(--secondary);
+        }
+
+        .filter-group input,
+        .filter-group select {
+            width: 100%;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid #c9d4de;
+            background: #fff;
+            font-family: "IBM Plex Mono", monospace;
+            font-size: 14px;
+        }
+
+        .btn {
+            background: var(--primary);
+            color: #fff;
+            border: none;
+            padding: 12px 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: 0.2s;
+        }
+
+        .btn:hover {
+            background: #1a507a;
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 800;
+            margin: 34px 0 18px;
+            color: var(--primary);
+        }
+
+        .table-wrapper {
+            background: var(--card);
+            border-radius: var(--radius);
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            border: 1px solid var(--line);
+            margin-bottom: 28px;
+        }
+
+        .table-header {
+            padding: 18px 22px;
+            border-bottom: 1px solid var(--line);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .table-title {
+            font-size: 18px;
+            font-weight: 700;
+        }
+
+        .table-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .small-btn {
+            padding: 8px 12px;
+            border-radius: 8px;
+            border: 1px solid #c9d4de;
+            background: #fff;
+            font-size: 13px;
+            cursor: pointer;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 10px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .badge-green {
+            background: #dff4e8;
+            color: #22724a;
+        }
+
+        .badge-blue {
+            background: #dfeaf5;
+            color: #24527a;
+        }
+
+        .badge-yellow {
+            background: #fff0c9;
+            color: #866500;
+        }
+
+        .table-scroll {
+            overflow: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1200px;
+            font-family: "IBM Plex Mono", monospace;
+        }
+
+        thead {
+            background: #f4f7fa;
+        }
+
+        th {
+            padding: 16px;
+            text-align: left;
+            font-size: 13px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #516578;
+            border-bottom: 1px solid var(--line);
+        }
+
+        td {
+            padding: 16px;
+            border-bottom: 1px solid #edf1f4;
+            font-size: 13px;
+            vertical-align: middle;
+        }
+
+        tbody tr:hover {
+            background: #f8fbfd;
+        }
+
+        .country-link {
+            font-weight: 700;
+        }
+
+        .rice-value {
+            font-weight: 700;
+            color: #0e5b39;
+        }
+
+        .yield-metric {
+            font-weight: 700;
+            color: #17496f;
+        }
+
+        .metadata-box {
+            background: #fff;
+            border-left: 5px solid var(--primary);
+            border-radius: 0 12px 12px 0;
+            padding: 22px;
+            margin-bottom: 18px;
+            box-shadow: var(--shadow);
+        }
+
+        .metadata-box h3 {
+            margin-bottom: 12px;
+            color: var(--primary);
+        }
+
+        .country-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .country-card {
+            background: #fff;
+            border-radius: var(--radius);
+            padding: 22px;
+            border: 1px solid var(--line);
+            box-shadow: var(--shadow);
+        }
+
+        .country-card h3 {
+            margin-bottom: 10px;
+            color: var(--primary);
+        }
+
+        .country-card p {
+            color: var(--muted);
+            margin-bottom: 12px;
+        }
+
+        .footer {
+            background: #102f4b;
+            color: #d8e3ec;
+            padding: 34px;
+            margin-top: 40px;
+        }
+
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 20px;
+        }
+
+        .footer small {
+            color: #9eb2c3;
+        }
+
+        .hidden-helper {
+            display: none;
+        }
+
+        #preface h2 {
+            margin-bottom: 10px;
+        }
+
+        #preface p {
+            color: gray;
+            font-size: 15px;
+        }
+
+        @media(max-width:1100px) {
+
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .sidebar {
+                min-height: auto;
+            }
+
+        }
+    </style>
+</head>
+
+<body>
+
+    <header class="top-header">
+        <div class="top-header-inner">
+            <div>
+                <div class="portal-title">FakeRiceStat Portal</div>
+                <div class="portal-subtitle">
+                    International Rice Production and Agricultural Statistics Platform
+                </div>
+            </div>
+
+            <div class="release-badge">
+                Release 2026.1 • Last Updated: 19 May 2026
+            </div>
+        </div>
+    </header>
+
+    <div class="layout">
+
+        <aside class="sidebar">
+
+            <h3>Navigation</h3>
+
+            <a href="https://ralmario.github.io/stat.html/#preface">Preface</a>
+            <a href="https://ralmario.github.io/stat.html/#dashboard">Dashboard</a>
+            <a href="https://ralmario.github.io/stat.html/#production-table">Production Database</a>
+            <a href="https://ralmario.github.io/stat.html/#country-ranking">Country Rankings</a>
+            <a href="https://ralmario.github.io/stat.html/#regional-summary">Regional Summary</a>
+            <a href="https://ralmario.github.io/stat.html/#irrigated-production">Irrigated Production</a>
+            <a href="https://ralmario.github.io/stat.html/#rainfed-production">Rainfed Production</a>
+            <a href="https://ralmario.github.io/stat.html/#metadata-section">About this Page</a>
+
+        </aside>
+
+        <main class="content">
+
+            <div class="breadcrumb">
+                <span>Home</span>
+                <span>Agricultural Statistics</span>
+                <span>Rice Production in Asia</span>
+            </div>
+
+            <section class="card-grid">
+                <div id="preface">
+                    <h2>Rice Production in Asia</h2>
+                    <p>This section provides an overview of agricultural production trends across Asia. Data covers
+                        major rice-producing countries including China, India, Philippines, Vietnam, and Thailand.</p>
+                    <p>Indicators include production volume, yield per hectare, harvested area, irrigated share,
+                        consumption, imports, exports, and year-on-year growth.</p>
+                    <p>All values are structured to support time series analysis and cross-country comparison from 2010
+                        to 2025.</p>
+                </div>
+            </section>
+            <section id="values" class="card-grid">
+
+                <div class="card" data-id="id-prod">
+                    <div class="card-label">Total Rice Production</div>
+                    <div id="first-value" class="card-value production-pay">724.8M</div>
+                    <div class="card-note">Metric Tons, Asia Region</div>
+                </div>
+
+                <div class="card" data-id="id-yield">
+                    <div class="card-label">Average Yield</div>
+                    <div class="card-value yield-pay">4.92</div>
+                    <div class="card-note">Metric Tons per Hectare</div>
+                </div>
+
+                <div class="card" data-id="id-area">
+                    <div class="card-label">Harvested Area</div>
+                    <div class="card-value area-pay">147.3M</div>
+                    <div class="card-note">Hectares Harvested</div>
+                </div>
+
+                <div class="card" data-id="id-area">
+                    <div class="card-label">Rice Consumption</div>
+                    <div class="card-value rice-consumption">698.1M</div>
+                    <div class="card-note">Domestic Utilization</div>
+                </div>
+
+            </section>
+            <hr style="margin:40px 0;border:0;border-top:2px solid #d8e0e8;">
+            <h3 style="margin-bottom:30px">Rice Production Detailed Tables</h3>
+            <section class="table-wrapper">
+
+                <div class="table-header">
+
+                    <div class="table-title">
+                        Rice Production Database
+                    </div>
+
+                    <div class="table-actions">
+                        <span class="badge badge-blue">Asia Region</span>
+                    </div>
+
+                </div>
+
+                <div class="table-scroll">
+
+                    <table id="production-table">
+
+                        <thead>
+                            <tr>
+                                <th>Country</th>
+                                <th>Year</th>
+                                <th>Production (mt)</th>
+                                <th>Yield (mt/ha)</th>
+                                <th>Area Harvested (ha)</th>
+                                <th>Irrigated Area (ha)</th>
+                                <th>Consumption (mt)</th>
+                                <th>Exports (mt)</th>
+                                <th>Imports (mt)</th>
+                                <th>Growth (mt)</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr class="country-row" data-country="CHN" data-year="2025" data-region="east-asia">
+                                <td>
+                                    <a class="country-link" href="country/china.html" title="China Rice Statistics">
+                                        China
+                                    </a>
+                                </td>
+                                <td>2025</td>
+                                <td class="rice-value">214,500,000</td>
+                                <td class="yield-metric">6.9</td>
+                                <td>31,000,000</td>
+                                <td>94%</td>
+                                <td>208,000,000</td>
+                                <td>3,200,000</td>
+                                <td>1,500,000</td>
+                                <td>1.8%</td>
+                            </tr>
+
+                            <tr class="country-row" data-country="IND" data-year="2025" data-region="south-asia">
+                                <td>
+                                    <a class="country-link" href="country/india.html" title="India Rice Statistics">
+                                        India
+                                    </a>
+                                </td>
+                                <td>2025</td>
+                                <td class="rice-value">192,000,000</td>
+                                <td class="yield-metric">4.4</td>
+                                <td>43,600,000</td>
+                                <td>62%</td>
+                                <td>181,000,000</td>
+                                <td>22,500,000</td>
+                                <td>500,000</td>
+                                <td>2.1%</td>
+                            </tr>
+
+                            <tr class="country-row" data-country="PHL" data-year="2025" data-region="southeast-asia">
+                                <td>
+                                    <a class="country-link" href="country/philippines.html"
+                                        title="Philippines Rice Statistics">
+                                        Philippines
+                                    </a>
+                                </td>
+                                <td>2025</td>
+                                <td class="rice-value">20,300,000</td>
+                                <td class="yield-metric">4.3</td>
+                                <td>4,700,000</td>
+                                <td>69%</td>
+                                <td>21,700,000</td>
+                                <td>80,000</td>
+                                <td>3,900,000</td>
+                                <td>1.6%</td>
+                            </tr>
+
+                            <tr class="country-row" data-country="VNM" data-year="2025" data-region="southeast-asia">
+                                <td>
+                                    <a class="country-link" href="country/vietnam.html" title="Vietnam Rice Statistics">
+                                        Vietnam
+                                    </a>
+                                </td>
+                                <td>2025</td>
+                                <td class="rice-value">44,700,000</td>
+                                <td class="yield-metric">6.1</td>
+                                <td>7,300,000</td>
+                                <td>88%</td>
+                                <td>29,400,000</td>
+                                <td>7,900,000</td>
+                                <td>210,000</td>
+                                <td>1.4%</td>
+                            </tr>
+
+                            <tr class="country-row" data-country="THA" data-year="2025" data-region="southeast-asia">
+                                <td>
+                                    <a class="country-link" href="country/thailand.html"
+                                        title="Thailand Rice Statistics">
+                                        Thailand
+                                    </a>
+                                </td>
+                                <td>2025</td>
+                                <td class="rice-value">33,800,000</td>
+                                <td class="yield-metric">3.1</td>
+                                <td>10,800,000</td>
+                                <td>73%</td>
+                                <td>14,500,000</td>
+                                <td>9,500,000</td>
+                                <td>400,000</td>
+                                <td>0.8%</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+            <section class="table-wrapper">
+
+                <div class="table-header">
+                    <div class="table-title">Country Ranking</div>
+                    <div>
+                        <span class="badge badge-green">Top Producers</span>
+                    </div>
+                </div>
+
+                <div class="table-scroll">
+
+                    <table id="country-ranking">
+
+                        <thead>
+                            <tr>
+                                <th>Rank</th>
+                                <th>Country</th>
+                                <th>Production</th>
+                                <th>Regional Share</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr data-country="CHN">
+                                <td>1</td>
+                                <td>China</td>
+                                <td class="rice-value">214.5M</td>
+                                <td>29.6%</td>
+                                <td><span class="badge badge-green">Major Producer</span></td>
+                            </tr>
+
+                            <tr data-country="IND">
+                                <td>2</td>
+                                <td>India</td>
+                                <td class="rice-value">192.0M</td>
+                                <td>26.5%</td>
+                                <td><span class="badge badge-green">Major Producer</span></td>
+                            </tr>
+
+                            <tr data-country="VNM">
+                                <td>3</td>
+                                <td>Vietnam</td>
+                                <td class="rice-value">44.7M</td>
+                                <td>6.2%</td>
+                                <td><span class="badge badge-blue">Export Driven</span></td>
+                            </tr>
+
+                            <tr data-country="PHL">
+                                <td>4</td>
+                                <td>Philippines</td>
+                                <td class="rice-value">20.3M</td>
+                                <td>2.8%</td>
+                                <td><span class="badge badge-yellow">Import Reliant</span></td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+            <section class="table-wrapper">
+
+                <div class="table-header">
+                    <div class="table-title">Regional Summary</div>
+                </div>
+
+                <div class="table-scroll">
+
+                    <table class="region-breakdown summary">
+
+                        <thead>
+                            <tr>
+                                <th>Region</th>
+                                <th>Total Production</th>
+                                <th>Average Yield</th>
+                                <th>Export Volume</th>
+                                <th>Import Volume</th>
+                            </tr>
+                        </thead>
+
+                        <tbody>
+
+                            <tr data-region="east-asia">
+                                <td>East Asia</td>
+                                <td>228.4M</td>
+                                <td>6.7</td>
+                                <td>3.3M</td>
+                                <td>2.6M</td>
+                            </tr>
+
+                            <tr data-region="south-asia">
+                                <td>South Asia</td>
+                                <td>245.8M</td>
+                                <td>4.3</td>
+                                <td>28.8M</td>
+                                <td>1.7M</td>
+                            </tr>
+
+                            <tr data-region="southeast-asia">
+                                <td>Southeast Asia</td>
+                                <td>193.9M</td>
+                                <td>4.5</td>
+                                <td>21.8M</td>
+                                <td>6.4M</td>
+                            </tr>
+
+                        </tbody>
+
+                    </table>
+
+                </div>
+
+            </section>
+
+            <section class="table-wrapper">
+
+                <div class="table-header">
+                    <div class="table-title">Irrigation Production (in metric tons)</div>
+                </div>
+
+                <div class="table-scroll">
+                    <table id="irrigated-production" class="production">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>China</th>
+                                <th>India</th>
+                                <th>Indonesia</th>
+                                <th>Vietnam</th>
+                                <th>Thailand</th>
+                                <th>Philippines</th>
+                                <th>Bangladesh</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr data-year="2010">
+                                <td>2010</td>
+                                <td class="rice">120.4</td>
+                                <td class="rice">98.2</td>
+                                <td>42.1</td>
+                                <td>38.5</td>
+                                <td>35.2</td>
+                                <td>15.6</td>
+                                <td>28.4</td>
+                            </tr>
+                            <tr data-year="2011">
+                                <td>2011</td>
+                                <td class="rice">122.1</td>
+                                <td class="rice">100.5</td>
+                                <td>43.0</td>
+                                <td>39.1</td>
+                                <td>35.8</td>
+                                <td>15.9</td>
+                                <td>29.1</td>
+                            </tr>
+                            <tr data-year="2012">
+                                <td>2012</td>
+                                <td class="rice">124.0</td>
+                                <td class="rice">102.8</td>
+                                <td>43.7</td>
+                                <td>40.0</td>
+                                <td>36.1</td>
+                                <td>16.2</td>
+                                <td>29.8</td>
+                            </tr>
+                            <tr data-year="2013">
+                                <td>2013</td>
+                                <td class="rice">126.3</td>
+                                <td class="rice">105.4</td>
+                                <td>44.5</td>
+                                <td>41.2</td>
+                                <td>36.9</td>
+                                <td>16.6</td>
+                                <td>30.5</td>
+                            </tr>
+                            <tr data-year="2014">
+                                <td>2014</td>
+                                <td class="rice">128.0</td>
+                                <td class="rice">107.9</td>
+                                <td>45.3</td>
+                                <td>42.0</td>
+                                <td>37.4</td>
+                                <td>17.0</td>
+                                <td>31.0</td>
+                            </tr>
+                            <tr data-year="2015">
+                                <td>2015</td>
+                                <td class="rice">129.5</td>
+                                <td class="rice">110.2</td>
+                                <td>46.1</td>
+                                <td>42.8</td>
+                                <td>38.1</td>
+                                <td>17.3</td>
+                                <td>31.8</td>
+                            </tr>
+                            <tr data-year="2016">
+                                <td>2016</td>
+                                <td class="rice">131.0</td>
+                                <td class="rice">112.0</td>
+                                <td>46.9</td>
+                                <td>43.5</td>
+                                <td>38.6</td>
+                                <td>17.6</td>
+                                <td>32.2</td>
+                            </tr>
+                            <tr data-year="2017">
+                                <td>2017</td>
+                                <td class="rice">133.4</td>
+                                <td class="rice">114.6</td>
+                                <td>47.5</td>
+                                <td>44.2</td>
+                                <td>39.0</td>
+                                <td>18.0</td>
+                                <td>32.9</td>
+                            </tr>
+                            <tr data-year="2018">
+                                <td>2018</td>
+                                <td class="rice">135.1</td>
+                                <td class="rice">116.3</td>
+                                <td>48.2</td>
+                                <td>45.0</td>
+                                <td>39.5</td>
+                                <td>18.4</td>
+                                <td>33.5</td>
+                            </tr>
+                            <tr data-year="2019">
+                                <td>2019</td>
+                                <td class="rice">136.8</td>
+                                <td class="rice">118.7</td>
+                                <td>49.0</td>
+                                <td>46.1</td>
+                                <td>40.1</td>
+                                <td>18.7</td>
+                                <td>34.1</td>
+                            </tr>
+                            <tr data-year="2020">
+                                <td>2020</td>
+                                <td class="rice">138.0</td>
+                                <td class="rice">120.1</td>
+                                <td>49.6</td>
+                                <td>47.0</td>
+                                <td>40.4</td>
+                                <td>19.0</td>
+                                <td>34.6</td>
+                            </tr>
+                            <tr data-year="2021">
+                                <td>2021</td>
+                                <td class="rice">139.5</td>
+                                <td class="rice">122.4</td>
+                                <td>50.2</td>
+                                <td>47.8</td>
+                                <td>40.9</td>
+                                <td>19.3</td>
+                                <td>35.0</td>
+                            </tr>
+                            <tr data-year="2022">
+                                <td>2022</td>
+                                <td class="rice">141.0</td>
+                                <td class="rice">124.0</td>
+                                <td>51.0</td>
+                                <td>48.5</td>
+                                <td>41.3</td>
+                                <td>19.6</td>
+                                <td>35.6</td>
+                            </tr>
+                            <tr data-year="2023">
+                                <td>2023</td>
+                                <td class="rice">142.2</td>
+                                <td class="rice">126.5</td>
+                                <td>51.8</td>
+                                <td>49.2</td>
+                                <td>41.8</td>
+                                <td>19.9</td>
+                                <td>36.0</td>
+                            </tr>
+                            <tr data-year="2024">
+                                <td>2024</td>
+                                <td class="rice">143.5</td>
+                                <td class="rice">128.0</td>
+                                <td>52.4</td>
+                                <td>50.0</td>
+                                <td>42.1</td>
+                                <td>20.1</td>
+                                <td>36.5</td>
+                            </tr>
+                            <tr data-year="2025">
+                                <td>2025</td>
+                                <td class="rice">145.0</td>
+                                <td class="rice">130.2</td>
+                                <td>53.0</td>
+                                <td>51.2</td>
+                                <td>42.7</td>
+                                <td>20.3</td>
+                                <td>37.0</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+            <section class="table-wrapper">
+
+                <div class="table-header">
+                    <div class="table-title">Rainfed Production (in metric tons)</div>
+                </div>
+
+                <div class="table-scroll">
+                    <table id="rainfed-production" class="production">
+                        <thead>
+                            <tr>
+                                <th>Year</th>
+                                <th>China</th>
+                                <th>India</th>
+                                <th>Indonesia</th>
+                                <th>Vietnam</th>
+                                <th>Thailand</th>
+                                <th>Philippines</th>
+                                <th>Bangladesh</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+
+                            <tr data-year="2010">
+                                <td>2010</td>
+                                <td class="rice">55.2</td>
+                                <td class="rice">60.8</td>
+                                <td>18.4</td>
+                                <td>10.2</td>
+                                <td>14.1</td>
+                                <td>5.8</td>
+                                <td>19.6</td>
+                            </tr>
+                            <tr data-year="2011">
+                                <td>2011</td>
+                                <td class="rice">56.0</td>
+                                <td class="rice">62.1</td>
+                                <td>18.9</td>
+                                <td>10.5</td>
+                                <td>14.4</td>
+                                <td>6.0</td>
+                                <td>20.1</td>
+                            </tr>
+                            <tr data-year="2012">
+                                <td>2012</td>
+                                <td class="rice">57.3</td>
+                                <td class="rice">63.5</td>
+                                <td>19.2</td>
+                                <td>10.9</td>
+                                <td>14.7</td>
+                                <td>6.2</td>
+                                <td>20.7</td>
+                            </tr>
+                            <tr data-year="2013">
+                                <td>2013</td>
+                                <td class="rice">58.0</td>
+                                <td class="rice">65.0</td>
+                                <td>19.6</td>
+                                <td>11.2</td>
+                                <td>15.0</td>
+                                <td>6.4</td>
+                                <td>21.3</td>
+                            </tr>
+                            <tr data-year="2014">
+                                <td>2014</td>
+                                <td class="rice">59.1</td>
+                                <td class="rice">66.8</td>
+                                <td>20.0</td>
+                                <td>11.6</td>
+                                <td>15.4</td>
+                                <td>6.6</td>
+                                <td>21.8</td>
+                            </tr>
+                            <tr data-year="2015">
+                                <td>2015</td>
+                                <td class="rice">60.0</td>
+                                <td class="rice">68.0</td>
+                                <td>20.5</td>
+                                <td>12.0</td>
+                                <td>15.8</td>
+                                <td>6.8</td>
+                                <td>22.4</td>
+                            </tr>
+                            <tr data-year="2016">
+                                <td>2016</td>
+                                <td class="rice">61.2</td>
+                                <td class="rice">69.4</td>
+                                <td>20.9</td>
+                                <td>12.3</td>
+                                <td>16.1</td>
+                                <td>7.0</td>
+                                <td>22.9</td>
+                            </tr>
+                            <tr data-year="2017">
+                                <td>2017</td>
+                                <td class="rice">62.5</td>
+                                <td class="rice">70.8</td>
+                                <td>21.3</td>
+                                <td>12.7</td>
+                                <td>16.5</td>
+                                <td>7.2</td>
+                                <td>23.4</td>
+                            </tr>
+                            <tr data-year="2018">
+                                <td>2018</td>
+                                <td class="rice">63.0</td>
+                                <td class="rice">72.0</td>
+                                <td>21.7</td>
+                                <td>13.0</td>
+                                <td>16.8</td>
+                                <td>7.4</td>
+                                <td>23.9</td>
+                            </tr>
+                            <tr data-year="2019">
+                                <td>2019</td>
+                                <td class="rice">64.1</td>
+                                <td class="rice">73.5</td>
+                                <td>22.1</td>
+                                <td>13.4</td>
+                                <td>17.1</td>
+                                <td>7.6</td>
+                                <td>24.3</td>
+                            </tr>
+                            <tr data-year="2020">
+                                <td>2020</td>
+                                <td class="rice">65.0</td>
+                                <td class="rice">74.8</td>
+                                <td>22.6</td>
+                                <td>13.8</td>
+                                <td>17.5</td>
+                                <td>7.8</td>
+                                <td>24.8</td>
+                            </tr>
+                            <tr data-year="2021">
+                                <td>2021</td>
+                                <td class="rice">66.3</td>
+                                <td class="rice">76.2</td>
+                                <td>23.0</td>
+                                <td>14.1</td>
+                                <td>17.9</td>
+                                <td>8.0</td>
+                                <td>25.2</td>
+                            </tr>
+                            <tr data-year="2022">
+                                <td>2022</td>
+                                <td class="rice">67.0</td>
+                                <td class="rice">77.5</td>
+                                <td>23.4</td>
+                                <td>14.5</td>
+                                <td>18.2</td>
+                                <td>8.2</td>
+                                <td>25.7</td>
+                            </tr>
+                            <tr data-year="2023">
+                                <td>2023</td>
+                                <td class="rice">68.2</td>
+                                <td class="rice">78.9</td>
+                                <td>23.8</td>
+                                <td>14.8</td>
+                                <td>18.6</td>
+                                <td>8.4</td>
+                                <td>26.1</td>
+                            </tr>
+                            <tr data-year="2024">
+                                <td>2024</td>
+                                <td class="rice">69.0</td>
+                                <td class="rice">80.3</td>
+                                <td>24.2</td>
+                                <td>15.1</td>
+                                <td>18.9</td>
+                                <td>8.6</td>
+                                <td>26.5</td>
+                            </tr>
+                            <tr data-year="2025">
+                                <td>2025</td>
+                                <td class="rice">70.1</td>
+                                <td class="rice">82.0</td>
+                                <td>24.7</td>
+                                <td>15.5</td>
+                                <td>19.3</td>
+                                <td>8.8</td>
+                                <td>27.0</td>
+                            </tr>
+
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+            <section>
+
+                <div class="section-title">
+                    Country Profiles
+                </div>
+
+                <div class="country-grid">
+
+                    <div class="country-card" data-country="PHL">
+                        <h3>Philippines</h3>
+                        <div>
+                            Rice self-sufficiency monitoring, irrigated lowland systems, and import dependency analysis.
+                        </div>
+                        <a href="https://ralmario.github.io/stat.html/reports/phl-rice-report.pdf"
+                            title="Philippines Rice Report">
+                            View Report
+                        </a>
+                    </div>
+
+                    <div class="country-card" data-country="IND">
+                        <h3>India</h3>
+                        <div>
+                            Major global exporter with diversified seasonal rice production systems.
+                        </div>
+                        <a href="https://ralmario.github.io/stat.html/reports/india-rice-statistics.xlsx">
+                            Download Dataset
+                        </a>
+                    </div>
+
+                    <div class="country-card" data-country="VNM">
+                        <h3>Vietnam</h3>
+                        <div>
+                            Delta-intensive rice economy focused on export-oriented production.
+                        </div>
+                        <a href="https://ralmario.github.io/stat.html/reports/vietnam-methodology.html">
+                            Methodology
+                        </a>
+                    </div>
+
+                </div>
+
+            </section>
+
+            <section class="section-title" id="metadata-section">
+                About this Page
+            </section>
+
+            <div class="metadata-box">
+
+                <h3>Technical Notes</h3>
+
+                <div>
+                    The dataset contains fictionalized agricultural statistics designed for
+                    web scraping practice using R and rvest.
+                </div>
+
+            </div>
+
+            <div class="hidden-helper">
+                production-helper
+                country-helper
+                scraping-helper
+                rvest-helper
+            </div>
+        </main>
+
+    </div>
+
+</body>
+
+</html>
